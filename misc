@@ -1,0 +1,92 @@
+Multiple GCP gcloud accounts
+	https://stackoverflow.com/a/52728878
+	gcloud config configurations list
+	gcloud config configurations create YOUR_ACCOUNT_NAME(PICK ANY)
+	gcloud auth activate-service-account https://cloud.google.com/sdk/gcloud/reference/auth/activate-service-account
+	gcloud config configurations activate ACCOUNT_NAME
+
+Enable GCP Compute Engine monitoring for COS (Compute optimized image)
+	gcloud compute instances add-metadata INSTANCE_NAME --metadata=google-monitoring-enabled=true
+ 
+Install Redis server on Ubuntu
+	https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-redis-on-ubuntu-20-04
+
+SSH into Docker container
+	docker ps
+	docker exec -it CONTAINER-ID /bin/bash
+
+Login to Google Cloud Compute Engine SSH
+	https://stackoverflow.com/a/57087567
+		Easiest way for creating and using one pair of ssh keys for multiple instances:
+		Step 1: Install putty and puttyGen from https://putty.org/
+		Step 2: Open a terminal in your local desktop / laptop (in Windows 10 and later you use Windows Linux Subsystem)
+		Type: ssh-keygen
+		Enter a name for the filename at the prompt: e.g. google_key
+		2 files will be created google_key and google_key.pub
+		Step 3: Copy the entire contents of the google_key.pub
+		Note there is no new line character. It should all be in one line.
+		Step 4: Before creating any VM instance, go to Compute Engine -> Metadata
+		Select "SSH keys" tab and click "Add SSH" keys
+		Paste the contents of the google_key.pub. If you pasted the contents properly, you should see the username appear on the left label. Then hit save.
+		Step 5: Now create your favorite VM instance under google compute.
+		Copy the External IP vm_instance_external_ip
+		Go back to your linux terminal and type
+		ssh -i google_key.pub username@vm_instance_external_ip
+		Type "yes"
+		And now you should be good to go.
+
+Install Nginx, PHP, MySQL on Ubuntu
+	https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-ubuntu-18-04
+
+GCP build errors with artifactregistry.repositories.uploadArtifacts permission missing.
+	Go to IAM panel in Console, and add the "Artifact Registry Administrator" role to the principal and check that the repository exists in the Artifact Registry.
+
+View Google Cloud Compute Instance Docker logs
+	sudo journalctl -u konlet-startup
+
+Laravel: Drop All Tables and Migrate
+	php artisan migrate:fresh --seed
+
+Docker exec console into a container:
+	docker exec -it <mycontainer> bash
+
+Laravel retry queue:
+	php artisan queue:retry all
+
+Prune Docker outdated images (purge)
+	docker system prune -a -f --volumes
+
+Add Google Cloud Logging to Docker on Compute Engine:
+	https://cloud.google.com/container-optimized-os/docs/how-to/logging#create_instsance_enabled
+	This did not help https://github.com/GoogleCloudPlatform/community/blob/master/archived/docker-gcplogs-driver/index.md#writing-metadata-from-the-cloud-console
+
+Getting a CORS error in browser related to a missing Access-Control-Allow-Origin header in response from storage.googleapis.com
+	You should publish the CORS file to your Google Cloud Storage bucket using `D:\web\xny\ticketsarabia> gcloud storage buckets update gs://ticketsarabia_staging --cors-file=google_cloud_storage_cors.json`
+
+	Here are the details https://cloud.google.com/storage/docs/using-cors#command-line_1
+
+Make Google Cloud Storage Bucket public
+	Go to PERMISSIONS
+	Click GRANT ACCESS
+	Add principals: allUsers
+	Assign roles: Storage Object Viewer
+
+Google Cloud errors Domain Restricted Sharing when trying to make a bucket public
+	In order to still allow specific Cloud Run services being invokeable by allUsers when a DRS policy is in place, platform administrators could disable the DRS policy, set an IAM policy including allUsers and finally enable the DRS policy again.
+	https://cloud.google.com/resource-manager/docs/organization-policy/restricting-domains#forcing_access
+	
+	Disable the policy here https://console.cloud.google.com/iam-admin/orgpolicies/iam-allowedPolicyMemberDomains?authuser=1&inv=1&invt=AbibFw&project=savvy-eats-production
+
+Filament: Call one action after another (open one modal after another)
+	https://filamentphp.com/docs/3.x/actions/adding-an-action-to-a-livewire-component#chaining-actions
+
+Docker, Prometheus and Grafana
+	How to Set Up Prometheus and Grafana on Docker - A Guide https://signoz.io/guides/how-to-install-prometheus-and-grafana-on-docker/
+	Monitor Docker with Prometheus https://docs.docker.com/engine/daemon/prometheus/
+	...
+
+Check php-fpm current configuration
+	php-fpm -tt
+
+PHP-FPM PM optimization (max_children,..)
+	https://gist.github.com/ebta/6ed4fab76bde21006059b2924ff543d5
