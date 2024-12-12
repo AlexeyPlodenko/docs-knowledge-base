@@ -90,3 +90,35 @@ Check php-fpm current configuration
 
 PHP-FPM PM optimization (max_children,..)
 	https://gist.github.com/ebta/6ed4fab76bde21006059b2924ff543d5
+
+**The page keeps reloading forever after login:**
+	Check that the host and port are in the `SANCTUM_STATEFUL_DOMAINS` list in the `/.env` file.
+
+**The file/image does not upload to Google Cloud Storage and there are no errors**
+	Check that the file google-cloud-key.json exists in root of the project. Check the Storage Admin permissions are set for the service account used in GCP.
+
+**Getting a CORS error in browser related to a missing Access-Control-Allow-Origin header in response from storage.googleapis.com**
+	You should publish the CORS file to your Google Cloud Storage bucket using `D:\web\xny\ticketsarabia> gcloud storage buckets update gs://ticketsarabia_staging --cors-file=google_cloud_storage_cors_staging.json`
+
+	Here are the details https://cloud.google.com/storage/docs/using-cors#command-line_1
+
+**Getting permission error while running a `gcloud` command, like `does not have permission to access b instance`**
+	You are probably authenticated using a wrong account. Check if you have the right account using the command `gcloud auth list`. Then switch to it using the `gcloud config set account ACCOUNT_EMAIL` command.
+
+	Otherwise Google how to authenticate.
+
+**Getting an error while running docker-compose up/watch - ...dl-cdn.alpinelinux.org... temporary error...**
+	Need to add the Google DNS server (8.8.8.8) into the Docker daemon.json file:
+	https://stackoverflow.com/a/71505749
+
+**The ticket scanner does not request permissions locally.**
+	Open the page chrome://flags/#unsafely-treat-insecure-origin-as-secure and input the project's scheme and host there.
+
+**[Fiddler] DNS Lookup for "ticketsarabia.localhost" failed. System.Net.Sockets.SocketException No such host is known**
+	Add the ticketsarabia.localhost to the hosts file.
+
+**Docker errors: RUN pecl install imagick: Package "imagick" does not have REST info xml available**
+	Just re-run the build. It is a temp. DNS issue. A potential fix is to add the DNS to the Docker daemon setup: `"dns" : ["8.8.8.8", "1.1.1.1"]`.
+
+**Getting a network error in browser with a message https://[::1]:5173/...js ERR_CERT_AUTHORITY_INVALID**
+	Open the link in a separate browser window and accept the certificate there. By opening Dev tools => network => reload page and right click the error links => open in a new tab => advanced => click the procceed button. After that the page should work correctly.
