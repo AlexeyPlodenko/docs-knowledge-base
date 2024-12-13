@@ -120,5 +120,8 @@ PHP-FPM PM optimization (max_children,..)
 **Docker errors: RUN pecl install imagick: Package "imagick" does not have REST info xml available**
 	Just re-run the build. It is a temp. DNS issue. A potential fix is to add the DNS to the Docker daemon setup: `"dns" : ["8.8.8.8", "1.1.1.1"]`.
 
+Laravel Jobs failed, but no output.
+	Check the failed_jobs DB table for the clues.
+
 **Getting a network error in browser with a message https://[::1]:5173/...js ERR_CERT_AUTHORITY_INVALID**
 	Open the link in a separate browser window and accept the certificate there. By opening Dev tools => network => reload page and right click the error links => open in a new tab => advanced => click the procceed button. After that the page should work correctly.
