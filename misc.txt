@@ -127,3 +127,13 @@ Laravel Jobs failed, but no output.
 	Open the link in a separate browser window and accept the certificate there. By opening Dev tools => network => reload page and right click the error links => open in a new tab => advanced => click the procceed button. After that the page should work correctly.
 
 Do not name files /.env.staging or /.env.production in Laravel, if you do not want Laravel to read those automatically, instead of /.env, when the APP_ENV is defined.
+
+Debug PHP with xDebug
+	WinCacheGrind
+
+
+
+
+
+
+
