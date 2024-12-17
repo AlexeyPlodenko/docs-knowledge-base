@@ -131,6 +131,13 @@ Do not name files /.env.staging or /.env.production in Laravel, if you do not wa
 Debug PHP with xDebug
 	WinCacheGrind
 
+Reduce Docker image size
+	* tools at Github - slim, dive.
+	* Linters - hadolint, dockerlinter.
+	* copying file is to use the RUN --mount=type=bind,source={localdir},target=/tmp - with this command you can copy data and perform other actions such as installing, uncompromising or anything else in a single layer and the residual size is only what happens at the end
+
+Improve Docker image security:
+	* never use the default user - always switch to a lesser privileged one unless absolutely necessary
 
 
 
