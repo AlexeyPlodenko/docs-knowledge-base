@@ -139,6 +139,16 @@ Reduce Docker image size
 Improve Docker image security:
 	* never use the default user - always switch to a lesser privileged one unless absolutely necessary
 
+HTML CSS layout using grid
+https://developer.mozilla.org/en-US/docs/Web/CSS/grid-template-areas
+grid-template-areas: 
+            "a a a"
+            "b c c"
+            "b c c";
+
+
+
+
 
 
 
