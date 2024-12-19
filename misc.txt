@@ -146,7 +146,11 @@ grid-template-areas:
             "b c c"
             "b c c";
 
-
+Apache redirect www to non-www (.htaccess)
+	RewriteEngine On
+	RewriteBase /
+	RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+	RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
 
 
 
