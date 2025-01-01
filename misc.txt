@@ -155,7 +155,9 @@ Apache redirect www to non-www (.htaccess)
 Redis server configuration file location on Ubuntu
 	/etc/redis/redis.conf
 
-
+Google Cloud GCP enable logging for Docker on Compute Instance
+	* Add metadata "google-logging-enabled" key with value "true".
+	* Add roles/logging.logWriter role to the service account.
 
 
 
