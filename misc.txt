@@ -164,3 +164,6 @@ GCP Logs Explorer how to search cloud function logs by filter and then get all l
 	"log correlation": https://cloud.google.com/logging/docs/view/correlate-logs which turned out to be exactly what I needed!
 	So to do what I described in the original question - you have to first search logs by your filter value (like "memory limit") in my case, and then when the results are displayed, go to "Correlate by" and pick "Cloud function" as the option - it will show all log lines from each cloud function execution where there is a String like "memory limit" in any of that run's log lines!
 
+Docker errors - cannot take exclusive lock for project "...": process with PID 19904 is still running
+	The bug https://github.com/docker/compose/issues/11066
+	The fix https://github.com/docker/compose/issues/11066#issuecomment-2591920868 - For Windows, the files were located in C:\Users\MY_USER_NAME\AppData\Local\docker-compose*.pid I have stopped Docker. Deleted the files. Started Docker. And now the build works again.
