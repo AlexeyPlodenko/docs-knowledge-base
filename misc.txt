@@ -167,3 +167,17 @@ GCP Logs Explorer how to search cloud function logs by filter and then get all l
 Docker errors - cannot take exclusive lock for project "...": process with PID 19904 is still running
 	The bug https://github.com/docker/compose/issues/11066
 	The fix https://github.com/docker/compose/issues/11066#issuecomment-2591920868 - For Windows, the files were located in C:\Users\MY_USER_NAME\AppData\Local\docker-compose*.pid I have stopped Docker. Deleted the files. Started Docker. And now the build works again.
+
+
+Split JS in chunks using Vite. Prefetch those chunks in Laravel.
+https://youtu.be/V0yZuNq2L-g?si=uI99RxEH1n1LR1L_
+
+
+
+
+
+
+
+
+
+
