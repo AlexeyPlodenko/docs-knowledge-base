@@ -172,7 +172,10 @@ Docker errors - cannot take exclusive lock for project "...": process with PID 1
 Split JS in chunks using Vite. Prefetch those chunks in Laravel.
 https://youtu.be/V0yZuNq2L-g?si=uI99RxEH1n1LR1L_
 
-
+Create user in Laravel
+	Execute in CLI:
+	php artisan tinker or php artisan ti 
+	User::create(["name"=> "larainfo","email"=>"larainfo@gmail.com","password"=>bcrypt("123456")]);
 
 
 
