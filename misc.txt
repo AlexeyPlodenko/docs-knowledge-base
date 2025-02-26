@@ -2,6 +2,11 @@ COOL SOFTWARE
 Kubernetes
 	https://canine.sh/
 
+To tech developers
+	https://wiki.c2.com/?PrematureOptimization
+	https://martinfowler.com/bliki/Yagni.html
+	https://en.wikipedia.org/wiki/Analysis_paralysis
+
 Multiple GCP gcloud accounts
 	https://stackoverflow.com/a/52728878
 	gcloud config configurations list
