@@ -186,7 +186,8 @@ Create user in Laravel
 	php artisan tinker or php artisan ti 
 	User::create(["name"=> "larainfo","email"=>"larainfo@gmail.com","password"=>bcrypt("123456")]);
 
-
+Enable QUIC HTTP 3 on Nginx
+	https://www.youtube.com/watch?v=rErY95OMI30
 
 
 
