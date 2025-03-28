@@ -189,7 +189,9 @@ Create user in Laravel
 Enable QUIC HTTP 3 on Nginx
 	https://www.youtube.com/watch?v=rErY95OMI30
 
-
+Ubuntu check what takes the disk space
+	sudo apt install ncdu
+	Check the documentation for the keys to use https://dev.yorhel.nl/ncdu/man (KEYS)
 
 
 
