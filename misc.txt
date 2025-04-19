@@ -193,6 +193,11 @@ Ubuntu check what takes the disk space
 	sudo apt install ncdu
 	Check the documentation for the keys to use https://dev.yorhel.nl/ncdu/man (KEYS)
 
+SPF, DKIM, DMARC (anti spam dns setup)
+	This service helps to check the setup https://dmarcchecker.app/
+
+
+
 
 
 
