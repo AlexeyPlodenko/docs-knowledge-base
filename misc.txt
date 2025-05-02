@@ -7,6 +7,9 @@ To tech developers
 	https://martinfowler.com/bliki/Yagni.html
 	https://en.wikipedia.org/wiki/Analysis_paralysis
 
+NodeJS
+	Optimizing Node.js Performance: V8 Memory Management & GC Tuning https://blog.platformatic.dev/optimizing-nodejs-performance-v8-memory-management-and-gc-tuning
+
 Multiple GCP gcloud accounts
 	https://stackoverflow.com/a/52728878
 	gcloud config configurations list
