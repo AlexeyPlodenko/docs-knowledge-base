@@ -199,7 +199,8 @@ Ubuntu check what takes the disk space
 SPF, DKIM, DMARC (anti spam dns setup)
 	This service helps to check the setup https://dmarcchecker.app/
 
-
+Delete Docker container, Docker image and re-build the service again
+	 docker stop ticketsarabia_www; docker rm ticketsarabia_www; docker rmi ticketsarabiacom-ticketsarabia_www:latest; docker compose watch
 
 
 
