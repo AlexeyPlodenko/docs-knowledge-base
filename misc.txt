@@ -204,6 +204,7 @@ Delete Docker container, Docker image and re-build the service again
 
 Rotate logs in Linux
 	https://serverfault.com/a/703788
+	https://www.baeldung.com/linux/rotating-logs-logrotate
 	Check if /etc/logrotate.conf and /etc/logrotate.d exists. If they do, add a file with a fitting name, e.g. site_email into /etc/logrotate.d with a content like the following:
 	/tmp/mysite-worker-email.log {
 	   compress
