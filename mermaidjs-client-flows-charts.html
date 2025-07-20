@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        .page {
+            display: flex;
+            flex-wrap: nowrap;
+            height: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        main {
+            width: 100%;
+        }
+
+        .mermaid {
+            /* This property simulates loading */
+            visibility: hidden;
+
+            text-align: center;
+            overflow-y: scroll;
+            height: 100%;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.5;
+            background-color: #000;
+        }
+
+        .loading-spinner {
+            width: 7rem !important;
+            height: 7rem !important;
+        }
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="page">
+        <nav class="d-flex flex-column flex-shrink-0 p-3 bg-light" style="width: 280px;">
+            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+                <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
+                <span class="fs-4">Client flows</span>
+            </a>
+            <hr>
+            <ul class="nav nav-pills flex-column mb-auto" id="nav">
+                <li class="nav-item">
+                    <a href="" class="nav-link active" aria-current="page" data-bs-toggle="tab" data-bs-target="#registration" role="tab" aria-controls="registration" aria-selected="true">Sign up</a>
+                </li>
+                <li class="nav-item">
+                    <a href="" class="nav-link" aria-current="page" data-bs-toggle="tab" data-bs-target="#login" role="tab" aria-controls="login" aria-selected="true">Sign in</a>
+                </li>
+                <li class="nav-item">
+                    <a href="" class="nav-link" aria-current="page" data-bs-toggle="tab" data-bs-target="#subscription" role="tab" aria-controls="subscription" aria-selected="false">Subscription</a>
+                </li>
+                <li>
+                    <a href="" class="nav-link" aria-current="page" data-bs-toggle="tab" data-bs-target="#re-subscription" role="tab" aria-controls="re-subscription" aria-selected="false">Re-subscription</a>
+                </li>
+                <li>
+                    <a href="" class="nav-link" aria-current="page" data-bs-toggle="tab" data-bs-target="#dashboard" role="tab" aria-controls="dashboard" aria-selected="false">Dashboard</a>
+                </li>
+            </ul>
+        </nav>
+        <main class="tab-content">
+            <!-- make all tabs active by default, for mermaid.js init to work properly  -->
+            <div class="mermaid tab-pane active" id="registration">
+                flowchart TD;
+                REGISTRATION["Sign up"] --> BASIC["Email, phone and password"];
+                BASIC --> SUBSCRIPTION[<a href='' data-go-to-tab="subscription">Subscription</a>];
+                SUBSCRIPTION --> DASHBOARD["Dashboard"];
+            </div>
+
+            <!-- make all tabs active by default, for mermaid.js init to work properly  -->
+            <div class="mermaid tab-pane active" id="login">
+                flowchart TD;
+                LOGIN["Sign in"] --> DASHBOARD["Dashboard"];
+            </div>
+
+            <!-- make all tabs active by default, for mermaid.js init to work properly  -->
+            <div class="mermaid tab-pane active" id="subscription">
+                flowchart TD;
+                SUBSCRIPTION["Subscription"] --> PLAN{"Plan selection"};
+                PLAN --> LOCAL["LO-CAL"];
+                PLAN --> OPTIMEAL["OPTI-MEAL"];
+                PLAN --> FULLON["FULL-ON"];
+                LOCAL & OPTIMEAL & FULLON --> DURATION["Duration selection"];
+                DURATION --> DELIVERY_DAYS["Delivery days selection"];
+                DELIVERY_DAYS --> ALLERGIES["Allergies selection"];
+                ALLERGIES --> DISHES["Dishes selection"];
+                DISHES --> PROFILE_DETAILS["Profile clarification"];
+                PROFILE_DETAILS --> ADDRESSES["Addresses management"];
+                ADDRESSES --> CONFIRMATION["Order confirmation and discount code"];
+                CONFIRMATION --> SKIPCASH_CHECKOUT["SkipCash checkout"];
+                SKIPCASH_CHECKOUT --> PAYMENT_CONFIRMATION["Payment confirmation & Invoice download"];
+            </div>
+
+            <!-- make all tabs active by default, for mermaid.js init to work properly  -->
+            <div class="mermaid tab-pane active" id="re-subscription">
+                flowchart TD;
+                RE_SUBSCRIPTION["Re-subscription"] --> PLAN{"Plan selection"};
+                PLAN --> LOCAL["LO-CAL"];
+                PLAN --> OPTIMEAL["OPTI-MEAL"];
+                PLAN --> FULLON["FULL-ON"];
+                LOCAL & OPTIMEAL & FULLON --> DURATION["Duration selection"];
+                DURATION --> DELIVERY_DAYS["Delivery days selection"];
+                DELIVERY_DAYS --> ALLERGIES["Allergies selection"];
+                ALLERGIES --> DISHES["Dishes selection"];
+                DISHES --> CONFIRMATION["Order confirmation and discount code"];
+                CONFIRMATION --> SKIPCASH_CHECKOUT["SkipCash checkout"];
+                SKIPCASH_CHECKOUT --> PAYMENT_CONFIRMATION["Payment confirmation & Invoice download"];
+            </div>
+
+            <!-- make all tabs active by default, for mermaid.js init to work properly  -->
+            <div class="mermaid tab-pane active" id="dashboard">
+                flowchart TD;
+                DASHBOARD["Dashboard"] --> HOME["Home"];
+                DASHBOARD --> MY_PLAN["My Plan"];
+                DASHBOARD --> DELIVERIES["Deliveries"];
+                DASHBOARD --> SUPPORT["Support"];
+                DASHBOARD --> ACCOUNT["Account"];
+            </div>
+        </main>
+    </div>
+
+    <div class="overlay" id="loading">
+        <div class="d-flex flex-column min-vh-100 justify-content-center align-items-center">
+            <div class="spinner-border loading-spinner" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
+
+    <script type="importmap">
+        {
+          "imports": {
+            "@popperjs/core": "https://cdn.jsdelivr.net/npm/@popperjs/core@2/dist/umd/popper.min.js",
+            "bootstrap": "https://cdn.jsdelivr.net/npm/bootstrap@5/dist/js/bootstrap.esm.min.js"
+          }
+        }
+    </script>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@latest/dist/mermaid.esm.min.mjs';
+        import * as bootstrap from 'bootstrap';
+
+        (async function() {
+            mermaid.initialize({ startOnLoad: false });
+            await mermaid.run();
+            // run everything related to the MermaidJS charts, after initialization
+
+            Array.from(document.getElementsByClassName('mermaid')).forEach(($mermaid) => {
+                $mermaid.style.visibility = 'visible';
+            });
+
+            // FIX THE INITIAL ACTIVE STATE
+            document.querySelectorAll('.tab-pane').forEach((pane, index) => {
+                if (index > 0) {
+                    pane.classList.remove('active');
+                }
+            });
+
+            // SETUP CLICK HANDLERS FOR IN-DIAGRAM LINKS
+            document.querySelectorAll('[data-go-to-tab]').forEach(($node) => {
+                $node.addEventListener('click', (event) => {
+                    event.preventDefault(); // Stop the link from navigating
+
+                    const targetTabId = $node.dataset.goToTab;
+
+                    // Find the actual Bootstrap tab TRIGGER in the nav menu
+                    const $triggerLink = document.querySelector(`#nav [data-bs-target="#${targetTabId}"]`);
+                    if ($triggerLink) {
+                        // Get or create a Tab instance from the trigger link and show it
+                        bootstrap.Tab.getOrCreateInstance($triggerLink).show();
+                    }
+                });
+            });
+
+            document.getElementById('loading').remove();
+        })();
+    </script>
+</body>
+</html>
