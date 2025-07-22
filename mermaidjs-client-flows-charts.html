@@ -74,10 +74,14 @@
         <main class="tab-content">
             <!-- make all tabs active by default, for mermaid.js init to work properly  -->
             <div class="mermaid tab-pane active" id="registration">
-                flowchart TD;
+                flowchart LR;
                 REGISTRATION["Sign up"] --> BASIC["Email, phone and password"];
                 BASIC --> SUBSCRIPTION[<a href='' data-go-to-tab="subscription">Subscription</a>];
                 SUBSCRIPTION --> DASHBOARD["Dashboard"];
+
+                BASIC@{img: "https://storage.googleapis.com/savvy_eats/documentation/client-app/screenshots/5.sign-up.jpg", w: 100, constraint: "on"};
+                SUBSCRIPTION@{img: "https://storage.googleapis.com/savvy_eats/documentation/client-app/screenshots/8.plan.jpg", w: 100, constraint: "on"};
+                DASHBOARD@{img: "https://storage.googleapis.com/savvy_eats/documentation/client-app/screenshots/33.dashboard.jpg", w: 100, constraint: "on"};
             </div>
 
             <!-- make all tabs active by default, for mermaid.js init to work properly  -->
@@ -88,7 +92,7 @@
 
             <!-- make all tabs active by default, for mermaid.js init to work properly  -->
             <div class="mermaid tab-pane active" id="subscription">
-                flowchart TD;
+                flowchart LR;
                 SUBSCRIPTION["Subscription"] --> PLAN{"Plan selection"};
                 PLAN --> LOCAL["LO-CAL"];
                 PLAN --> OPTIMEAL["OPTI-MEAL"];
@@ -102,6 +106,20 @@
                 ADDRESSES --> CONFIRMATION["Order confirmation and discount code"];
                 CONFIRMATION --> SKIPCASH_CHECKOUT["SkipCash checkout"];
                 SKIPCASH_CHECKOUT --> PAYMENT_CONFIRMATION["Payment confirmation & Invoice download"];
+
+                PLAN@{img: "https://storage.googleapis.com/savvy_eats/documentation/client-app/screenshots/8.plan.jpg", w: 100, constraint: "on"};
+                LOCAL@{img: "https://storage.googleapis.com/savvy_eats/documentation/client-app/screenshots/9.plan-details.jpg", w: 100, constraint: "on"};
+                OPTIMEAL@{img: "https://storage.googleapis.com/savvy_eats/documentation/client-app/screenshots/9.plan-details.jpg", w: 100, constraint: "on"};
+                FULLON@{img: "https://storage.googleapis.com/savvy_eats/documentation/client-app/screenshots/9.plan-details.jpg", w: 100, constraint: "on"};
+                DURATION@{img: "https://storage.googleapis.com/savvy_eats/documentation/client-app/screenshots/10.subscription-duration.jpg", w: 100, constraint: "on"};
+                DELIVERY_DAYS@{img: "https://storage.googleapis.com/savvy_eats/documentation/client-app/screenshots/12.delivery-days.jpg", w: 100, constraint: "on"};
+                ALLERGIES@{img: "https://storage.googleapis.com/savvy_eats/documentation/client-app/screenshots/13.allergies.jpg", w: 100, constraint: "on"};
+                DISHES@{img: "https://storage.googleapis.com/savvy_eats/documentation/client-app/screenshots/14.pick-dishes.jpg", w: 100, constraint: "on"};
+                PROFILE_DETAILS@{img: "https://storage.googleapis.com/savvy_eats/documentation/client-app/screenshots/17.profile-details.jpg", w: 100, constraint: "on"};
+                ADDRESSES@{img: "https://storage.googleapis.com/savvy_eats/documentation/client-app/screenshots/18.addresses.jpg", w: 100, constraint: "on"};
+                CONFIRMATION@{img: "https://storage.googleapis.com/savvy_eats/documentation/client-app/screenshots/23.order-confirmation.jpg", w: 100, constraint: "on"};
+                SKIPCASH_CHECKOUT@{img: "https://storage.googleapis.com/savvy_eats/documentation/client-app/screenshots/24.skipcash-1.jpg", w: 100, constraint: "on"};
+                PAYMENT_CONFIRMATION@{img: "https://storage.googleapis.com/savvy_eats/documentation/client-app/screenshots/31.payment-confirmation.jpg", w: 100, constraint: "on"};
             </div>
 
             <!-- make all tabs active by default, for mermaid.js init to work properly  -->
@@ -140,6 +158,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3/dist/svg-pan-zoom.min.js"></script>
     <script type="importmap">
         {
           "imports": {
@@ -154,12 +173,29 @@
 
         (async function() {
             mermaid.initialize({ startOnLoad: false });
-            await mermaid.run();
-            // run everything related to the MermaidJS charts, after initialization
 
-            Array.from(document.getElementsByClassName('mermaid')).forEach(($mermaid) => {
+            // adds pan zoom to mermaid.js SVGs
+            const $mermaidNodes = Array.from(document.getElementsByClassName('mermaid'));
+            for (const $mermaid of $mermaidNodes) {
+                const svgId = `${$mermaid.id}-svg`;
+                let { svg } = await mermaid.render(svgId, $mermaid.textContent);
+                svg = svg.replace(/ *max-width:[ 0-9.]*px;/i, '');
+                svg = svg.replace(/(<svg.*?)width\s*=\s*"[^"]*"(.*?>)/, '$1width="100%" height="100%"$2');
+
+                $mermaid.innerHTML = svg;
+                setTimeout(function() {
+                    svgPanZoom(`#${svgId}`, {
+                        zoomEnabled: true,
+                        controlIconsEnabled: true,
+                        fit: true,
+                        center: true,
+                        zoomScaleSensitivity: 0.5
+                    });
+                });
+
                 $mermaid.style.visibility = 'visible';
-            });
+            }
+            // run everything related to the MermaidJS charts, after initialization
 
             // FIX THE INITIAL ACTIVE STATE
             document.querySelectorAll('.tab-pane').forEach((pane, index) => {
