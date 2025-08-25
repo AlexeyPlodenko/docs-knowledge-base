@@ -213,5 +213,6 @@ Rotate logs in Linux
 	   rotate 7
 	}
 
-
+Docker errors - cannot take exclusive lock for project "ticketsarabiacom": process with PID 16688 is still running
+	Delete *.pid files from C:\Users\Alexey\AppData\Local\docker-compose\
 
