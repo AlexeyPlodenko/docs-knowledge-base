@@ -1,0 +1,2 @@
+# Exclude Docker DB data files from commit
+/.docker/db/data/*
