@@ -1,0 +1,5 @@
+# Exclude local DB data directory from build context to avoid invalid file errors
+/.docker/db/data/
+
+# Exclude node_modules if they are locally built, to speed up Docker
+/node_modules/
