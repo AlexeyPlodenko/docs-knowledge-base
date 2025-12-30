@@ -1,2 +1,25 @@
 # Exclude Docker DB data files from commit
 /.docker/db/data/*
+
+# Exclude IDE project configuration files, as those are developer personal
+/.fleet
+/.idea
+/.nova
+/.vscode
+/.zed
+
+# Exclude OS created hidden cache files
+.DS_Store
+Thumbs.db
+
+# Exclude log and key files for makes-no-sense and safety reasons
+*.log
+*.key
+
+# Exclude PHP runtime caches
+.phpunit.cache
+.phpunit.result.cache
+
+# Exclude directories managed packages managers and installed locally
+/vendor/
+/node_modules/
