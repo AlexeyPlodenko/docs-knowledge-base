@@ -1,0 +1,44 @@
+1. Generate the Key on your Droplet
+Log into your DigitalOcean Droplet via SSH and run this command:
+
+Bash
+ssh-keygen -t ed25519 -C "deploy@yourapp.com"
+
+
+When asked where to save: Press Enter to use the default (/home/user/.ssh/id_ed25519).
+When asked for a passphrase: Press Enter twice (leave it empty so the deployment can run automatically).
+2. Add the Public Key to GitHub
+You need to tell GitHub that this specific Droplet is allowed to access your repository.
+Copy the Public Key: Run this command on your Droplet to show the key:
+  
+Bash
+cat ~/.ssh/id_ed25519.pub
+
+Go to GitHub: Navigate to your specific Repository.
+Settings: Click on Settings > Deploy keys (in the left sidebar).
+Add deploy key:
+Title: Name it something like DigitalOcean Droplet.
+Key: Paste the string you copied (it should start with ssh-ed25519).
+Allow write access: Leave this unchecked (for security, the server only needs to read/pull code).
+
+3. Test the Connection
+Back on your Droplet, run this command to make sure GitHub recognizes the key:
+
+Bash
+ssh -T git@github.com
+
+
+Note: You might see a warning about the authenticity of the host. Type yes and press Enter. If successful, you’ll see: “Hi [YourRepo]! You've successfully authenticated...”
+
+4. Update your Workflow (The SSH Key)
+For your GitHub Action to work, you actually need a different key than the one above.
+The Deploy Key (created above): Stays on the Droplet so the Droplet can talk to GitHub.
+The SSH Secret (for the Action): This is a key that allows GitHub Actions to talk to the Droplet.
+If you haven't already, generate a second key pair on your local machine or Droplet to use for the SSH_PRIVATE_KEY secret in GitHub:
+Put the Public part of this second key into the Droplet's ~/.ssh/authorized_keys file.
+Put the Private part of this second key into GitHub Secrets (under SSH_PRIVATE_KEY).
+Quick Troubleshooting
+Permission Denied: Ensure the file permissions on the Droplet are correct:
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/authorized_keys
+Wrong User: If you generated the key as root but your app lives under a user named www-data, make sure that user has access to the keys.
