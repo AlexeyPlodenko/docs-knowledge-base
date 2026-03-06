@@ -1,71 +1,182 @@
-1. Prepare your DigitalOcean Droplet
-Before configuring GitHub, ensure your Droplet is ready:
-SSH Key: Generate an SSH key pair on your local machine (if you haven't already).
-                                                         
-1 Add the Public Key to ~/.ssh/authorized_keys on your Droplet
+================================================================================
+SERVER & CI/CD SETUP GUIDE (LARAVEL + GITHUB ACTIONS)
+Project: example.com
+================================================================================
 
-Permissions: Ensure the user you are logging in as (e.g., deploy or root) has ownership of the /var/www/html directory.
-Web Server: Ensure Nginx/Apache is configured to point to the public folder of your Laravel project.3
+This document outlines the manual steps required to prepare a DigitalOcean 
+Ubuntu 24.04 server to work with the provided deploy.yml workflow.
 
+--------------------------------------------------------------------------------
+1. SERVER-SIDE PREPARATION (SSH & DIRECTORY)
+--------------------------------------------------------------------------------
 
-2. Store Secrets in GitHub
-Never hardcode passwords or keys in your workflow file. Go to your GitHub Repository Settings > Secrets and variables > Actions and add the following:
-Secret Name
-Description
-DO_HOST
-The IP address of your Droplet.
-DO_USERNAME
-The SSH user (e.g., ubuntu or root).
-SSH_PRIVATE_KEY
-The Private Key (starts with -----BEGIN OPENSSH PRIVATE KEY-----).
+Run these commands as root on your DigitalOcean Droplet:
 
-3. Create the Workflow File
-Create a file at .github/workflows/deploy.yml in your repository.4 This example triggers a deployment whenever you push to the main branch.
+A. Generate the Deployment SSH Key:
+   ssh-keygen -t ed25519 -f /root/.ssh/github-actions-deploy.id_ed25519 -C "github-actions-deploy"
+   # Press Enter for no passphrase.
 
-YAML
+B. Authorize the Key for GitHub Actions:
+   # This allows GitHub to log into your server.
+   cat /root/.ssh/github-actions-deploy.id_ed25519.pub >> /root/.ssh/authorized_keys
+   chmod 600 /root/.ssh/authorized_keys
+   chmod 700 /root/.ssh/
 
-name: Deploy Laravel App
+C. Initialize the Application Directory:
+   mkdir -p /app && cd /app
+   
+   # Perform the initial clone using the custom key
+   GIT_SSH_COMMAND="ssh -i /root/.ssh/github-actions-deploy.id_ed25519 -o IdentitiesOnly=yes -o StrictHostKeyChecking=no" git clone git@github.com:username/example.com.git .
+
+D. Configure Local Git for the /app folder:
+   # This ensures "git pull" inside the workflow always uses the correct key.
+   git config core.sshCommand "ssh -i /root/.ssh/github-actions-deploy.id_ed25519 -o IdentitiesOnly=yes"
+
+--------------------------------------------------------------------------------
+2. GITHUB REPOSITORY CONFIGURATION
+--------------------------------------------------------------------------------
+
+A. Add Deploy Key (Allows Server to pull code from GitHub):
+   1. Run: cat /root/.ssh/github-actions-deploy.id_ed25519.pub
+   2. Go to: GitHub Repo > Settings > Deploy keys > Add deploy key.
+   3. Paste the key and name it "Staging Server Pull Key".
+   4. Check "Allow write access" (optional, but recommended for some git operations).
+
+B. Add Action Secrets (Allows GitHub to control the Server):
+   Go to: GitHub Repo > Settings > Secrets and variables > Actions.
+   Add the following New Repository Secrets:
+
+   HOST                : [Your Droplet IP]
+   USERNAME            : root
+   SSH_PRIVATE_KEY     : [Paste the content of /root/.ssh/github-actions-deploy.id_ed25519]
+   WEBSITE_DOWN_SECRET : [Any random string for maintenance mode]
+   SLACK_WEBHOOK       : [Your Slack Incoming Webhook URL]
+
+--------------------------------------------------------------------------------
+3. FINAL SERVER ENVIRONMENT CHECKS
+--------------------------------------------------------------------------------
+
+Before running the first deployment, ensure these are ready on the server:
+
+1. Environment File: 
+   cp /app/.env.example /app/.env
+   nano /app/.env # Update with production DB/App credentials.
+
+2. Services:
+   Ensure PHP 8.2-FPM and Nginx are installed.
+   Ensure the Nginx root points to: /app/public
+
+3. Permissions:
+   The workflow will attempt to run "chown -R www-data:www-data /app/".
+   Ensure the 'www-data' user exists on your system.
+
+4. Manual Verification:
+   Test the SSH connection manually from the server to GitHub:
+   ssh -T -i /root/.ssh/github-actions-deploy.id_ed25519 -o IdentitiesOnly=yes git@github.com
+
+--------------------------------------------------------------------------------
+DEPLOYMENT FLOW SUMMARY:
+1. GitHub Runner builds assets (npm run build).
+2. Runner logs into Server via SSH.
+3. Server pulls latest code using its local SSH key.
+4. Runner uploads 'public/build' folder via SCP.
+5. Server runs migrations, clears caches, and reloads PHP-FPM.
+================================================================================
+
+Here is an example of /.github/workflows/deploy.yml file to commit to your source code:
+name: Deploy Website to DigitalOcean via SSH
 
 on:
-  push:
-    branches: [ "main" ]
+  workflow_dispatch: # This enables the manual trigger
+  push: # This is an automatic deployment on every push to the branch
+    branches: [ "staging" ]
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: "ubuntu-24.04"
+    environment: staging
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install dependencies and build
+        env:
+            VITE_APP_NAME: "Example website"
+        run: |
+              npm ci --legacy-peer-deps
+              npm run build
+
+      - name: Take website down and clean node_modules folder
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+            host: ${{ secrets.HOST }}
+            username: ${{ secrets.USERNAME }}
+            key: ${{ secrets.SSH_PRIVATE_KEY }}
+            port: 22
+            script: |
+                    cd /app/
+                    php artisan down --secret="${{ secrets.WEBSITE_DOWN_SECRET }}" --refresh=60 || true
+
+                    # Remove node_modules to prevent ENOTEMPTY errors
+                    rm -rf ./node_modules/
+
+                    # Maybe we would need to delete public/build/ directory in the future. For now,
+                    # since old visitors might reference the assets from the previous builds,
+                    # let's keep the old assets
+                    # Remove /public/build/ to free space
+                    # rm -rf ./public/build/
+
+        # Upload the compiled 'public/build' folder to the server
+      - name: Copy build files to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+            host: ${{ secrets.HOST }}
+            username: ${{ secrets.USERNAME }}
+            key: ${{ secrets.SSH_PRIVATE_KEY }}
+            port: 22
+            source: "./public/build/"
+            target: "/app/"
+
       - name: Deploy to DigitalOcean via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.DO_HOST }}
-          username: ${{ secrets.DO_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          script: |
-            cd /var/www/your-project-folder
-            git pull origin main
-            composer install --no-interaction --prefer-dist --optimize-autoloader
-            php artisan migrate --force
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:cache
+            host: ${{ secrets.HOST }}
+            username: ${{ secrets.USERNAME }}
+            key: ${{ secrets.SSH_PRIVATE_KEY }}
+            port: 22
+            script: |
+                      cd /app/
+                      git config core.sshCommand "ssh -i ~/.ssh/github-actions-deploy.id_ed25519 -o IdentitiesOnly=yes -o StrictHostKeyChecking=no"
 
+                      git fetch origin
+                      git checkout ${{ github.ref_name }}
+                      git pull origin ${{ github.ref_name }}
 
-4. How the Flow Works
-Push: You push code to the main branch.
-Trigger: GitHub Actions spins up a temporary Ubuntu container.
-SSH Connection: The appleboy/ssh-action uses your stored private key to open a secure tunnel to your DigitalOcean Droplet.
-Commands: It executes the script line-by-line:
-git pull: Updates the code on the server.
-composer install: Updates dependencies (skipping dev tools).
-php artisan migrate --force: Runs database updates (the --force flag is required for production).5
+                      composer install --no-interaction --prefer-dist --optimize-autoloader
 
-cache: Optimizes Laravel performance by caching configurations and routes.
-Important Considerations
-Zero Downtime: The method above has a few seconds of downtime while commands run. For zero-downtime, consider using tools like Laravel Forge or a dedicated deployment script like Envoy.
-PHP/Node Versions: Ensure the PHP version on your Droplet matches your composer.json requirements.
-Environment Files: GitHub Actions does not manage your .env file. You must manually create and manage the .env file directly on the Droplet.
+                      php artisan migrate --force
+
+                      php artisan responsecache:clear
+                      php artisan cache:clear
+                      php artisan config:cache
+                      php artisan route:cache
+                      php artisan view:cache
+
+                      find /var/cache/nginx/ -mindepth 1 -delete
+
+                      chown -R www-data:www-data /app/
+                      chmod -R 775 /app/storage /app/bootstrap/cache
+
+                      systemctl reload php8.2-fpm.service
+                      php artisan up
+
+      - name: Notify Slack on Failure
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+            SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+            SLACK_TITLE: "Deployment to STAGING failed!"
+            SLACK_MESSAGE: "The deployment for ${{ github.repository }} to STAGING failed. ❌"
+            SLACK_COLOR: "#ff0000"
+
