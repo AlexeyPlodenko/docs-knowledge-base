@@ -1,0 +1,58 @@
+SETUP: SSL CLIENT AUTHENTICATION (WINDOWS)
+This guide covers generating and installing SSL Client Certificates to protect a PHP script behind an Nginx "key-based" barrier.
+
+1. GENERATE THE CERTIFICATES (OPENSSL)
+If using Windows, run these in Git Bash or a terminal with OpenSSL installed.
+
+A. Create the Certificate Authority (The Master Key)
+openssl genrsa -out ca.key 4096
+openssl req -new -x509 -days 3650 -key ca.key -out ca.crt
+
+B. Create the Client Certificate (The User Badge)
+openssl genrsa -out client.key 2048
+openssl req -new -key client.key -out client.csr
+openssl x509 -req -days 365 -in client.csr -CA ca.crt -CAkey ca.key -set_serial 01 -out client.crt
+
+C. Export to Windows-Friendly Format (.p12)
+You will be asked for an "Export Password." Keep this safe!
+openssl pkcs12 -export -out client.p12 -inkey client.key -in client.crt -certfile ca.crt
+
+2. SERVER CONFIGURATION (NGINX)
+Upload 'ca.crt' to your server (e.g., /etc/nginx/certs/) and update your site config:
+
+server {
+listen 443 ssl;
+server_name [suspicious link removed];
+
+ssl_certificate /etc/nginx/certs/server.crt;
+ssl_certificate_key /etc/nginx/certs/server.key;
+
+# THE BARRIER
+ssl_client_certificate /etc/nginx/certs/ca.crt;
+ssl_verify_client on;
+
+location /secret-script.php {
+    include snippets/fastcgi-php.conf;
+    fastcgi_pass unix:/var/run/php/php-fpm.sock;
+}
+}
+
+3. WINDOWS INSTALLATION STEPS
+Double-click 'client.p12'.
+
+Select 'Current User' -> Next.
+
+Confirm file path -> Next.
+
+Enter the 'Export Password' created in Step 1C.
+
+Select 'Automatically select the certificate store' -> Next.
+
+Click Finish.
+
+4. USAGE NOTES
+Chrome/Edge: Uses the Windows Certificate Store automatically. A popup will appear asking you to select your certificate when you visit the site.
+
+Firefox: Go to Settings -> Privacy & Security -> View Certificates -> Your Certificates -> Import. Select 'client.p12'.
+
+Security: If a device is lost, you must revoke the certificate on the server side using a Certificate Revocation List (CRL).
