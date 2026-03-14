@@ -21,20 +21,20 @@ openssl pkcs12 -export -out client.p12 -inkey client.key -in client.crt -certfil
 Upload 'ca.crt' to your server (e.g., /etc/nginx/certs/) and update your site config:
 
 server {
-listen 443 ssl;
-server_name [suspicious link removed];
-
-ssl_certificate /etc/nginx/certs/server.crt;
-ssl_certificate_key /etc/nginx/certs/server.key;
-
-# THE BARRIER
-ssl_client_certificate /etc/nginx/certs/ca.crt;
-ssl_verify_client on;
-
-location /secret-script.php {
-    include snippets/fastcgi-php.conf;
-    fastcgi_pass unix:/var/run/php/php-fpm.sock;
-}
+    listen 443 ssl;
+    server_name [suspicious link removed];
+    
+    ssl_certificate /etc/nginx/certs/server.crt;
+    ssl_certificate_key /etc/nginx/certs/server.key;
+    
+    # THE BARRIER
+    ssl_client_certificate /etc/nginx/certs/ca.crt;
+    ssl_verify_client on;
+    
+    location /secret-script.php {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php-fpm.sock;
+    }
 }
 
 3. WINDOWS INSTALLATION STEPS
